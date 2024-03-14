@@ -1,13 +1,341 @@
-Database: radius
-User: radius
-Password: Somestrongpassword_321
+[root@radius ~]# yum -y update
 
-dnf -y install unzip
-MariaDB [(none)]> SHOW GLOBAL VARIABLES LIKE 'time_zone';      //Check Time Zone Radius Server
+[root@radius ~]# vim /etc/selinux/config
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# vim /etc/selinux/config
+[root@radius ~]# yum -y groupinstall "Development Tools"
 
-[root@docker ~]# sudo dnf module list php
-[root@docker ~]# sudo dnf module reset php
-[root@docker ~]# sudo dnf module enable php:remi-7.3
-[root@docker ~]# sudo dnf module enable php:remi-7.4
-[root@docker ~]# dnf module reset php
-[root@docker ~]# sudo dnf module enable php:remi-7.4
+
+
+[root@radius ~]# yum -y install httpd httpd-devel
+
+
+[root@radius ~]# systemctl enable --now httpd
+
+
+[root@radius ~]# systemctl status httpd
+
+
+[root@radius ~]#
+[root@radius ~]# curl -LsS https://downloads.mariadb.com/MariaDB/mariadb_repo_setup | sudo bash -s --
+
+
+[root@radius ~]#
+[root@radius ~]# yum -y install MariaDB-server MariaDB-client
+
+
+[root@radius ~]#
+[root@radius ~]# vim /etc/yum.repos.d/MariaDB.repo
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# yum -y install MariaDB-server MariaDB-client
+
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# sudo tee /etc/yum.repos.d/MariaDB.repo
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# vim /etc/yum.repos.d/MariaDB.repo
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# yum -y install MariaDB-server MariaDB-client
+
+
+
+
+
+
+
+
+
+
+
+[root@radius ~]#
+[root@radius ~]# yum install MariaDB-server MariaDB-client
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# mysql_secure_installation
+
+
+[root@radius ~]# mysql -u root -p
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# yum -y install epel-release
+
+
+
+                                                                                                                  
+ 
+[root@radius ~]#
+[root@radius ~]# yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+                                                                                                                
+
+
+
+
+
+[root@radius ~]# yum -y install yum-utils
+
+
+
+[root@radius ~]#
+[root@radius ~]# yum-config-manager --disable remi-php54
+
+
+[root@radius ~]#
+[root@radius ~]# yum-config-manager --enable remi-php74
+
+
+[root@radius ~]#
+[root@radius ~]# yum -y install php php-{cli,curl,mysqlnd,devel,gd,pear,mcrypt,mbstring,xml,pear}
+
+
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# php -v
+
+
+
+[root@radius ~]#
+[root@radius ~]# yum -y install freeradius freeradius-utils freeradius-mysql
+
+
+[root@radius ~]#
+[root@radius ~]# systemctl enable --now radiusd.service
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# systemctl status radiusd.service
+
+[root@radius ~]# firewall-cmd --reload
+
+
+[root@radius ~]# sudo ss -tunlp | grep radiusd
+
+
+
+[root@radius ~]#
+[root@radius ~]# mysql -u root -p radius < /etc/raddb/mods-config/sql/main/mysql/schema.sql
+Enter password:
+[root@radius ~]# ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled/
+
+[root@radius ~]# vim /etc/raddb/mods-available/sql
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# chgrp -h radiusd /etc/raddb/mods-enabled/sql
+
+[root@radius ~]# yum -y install wget
+
+
+[root@radius ~]#
+[root@radius ~]# wget https://github.com/lirantal/daloradius/archive/master.zip
+
+[root@radius ~]# unzip master.zip
+
+
+[root@radius ~]# mv daloradius-master/ daloradius
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# mysql -u root -p radius < daloradius/contrib/db/fr2-mysql-daloradius-and-freeradius.sql
+Enter password:
+[root@radius ~]# mysql -u root -p radius < daloradius/contrib/db/mysql-daloradius.sql
+Enter password:
+
+
+
+[root@radius ~]# mv daloradius /var/www/html/
+
+[root@radius ~]# chown -R apache:apache /var/www/html/daloradius/
+
+[root@radius ~]# mv /var/www/html/daloradius/library/daloradius.conf.php.sample /var/www/html/daloradius/library/daloradius.conf.php
+
+[root@radius ~]# chmod 664 /var/www/html/daloradius/library/daloradius.conf.php
+
+[root@radius ~]# vim /var/www/html/daloradius/library/daloradius.conf.php
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# systemctl restart radiusd.service httpd
+
+[root@radius ~]# systemctl status radiusd.service httpd
+
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# sudo pear install DB
+
+
+
+[root@radius ~]# sudo pear install MDB2
+
+
+[root@radius ~]# chmod -R 775 /var/www/html/daloradius/library/daloradius.conf.php
+[root@radius ~]# sudo chown -R apache:apache /var/www/html/daloradius/
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# mv /var/www/html/daloradius/library/daloradius.conf.php.sample /var/www/html/daloradius/library/daloradius.conf.php
+
+[root@radius ~]# sudo chmod 664 /var/www/html/daloradius/library/daloradius.conf.php
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#  systemctl restart radiusd.service httpd
+
+[root@radius ~]# mysql -u root -p radius  daloradius/contrib/db/mysql-daloradius.sql
+
+
+
+
+
+
+
+[root@radius ~]# mysql -u root -p radius  daloradius/contrib/db/fr2-mysql-daloradius-and-freeradius.sql
+
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# mv daloradius /var/www/html/
+
+[root@radius ~]# mysql -u root -p radius  /etc/raddb/mods-config/sql/main/mysql/schema.sql
+
+
+[root@radius ~]# sudo ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled/
+
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# sudo ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled/
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# ln -s /etc/raddb/mods-available/
+
+
+
+[root@radius ~]# ln -s /etc/raddb/mods-available/sql /etc/raddb/mods-enabled/
+
+
+
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# mysql -u root -p radius < daloradius/contrib/db/mysql-daloradius.sql
+
+
+
+[root@radius ~]# mysql -u root -p radius < daloradius/contrib/db/mysql-daloradius.sql
+
+
+[root@radius ~]# mysql -u root -p radius < daloradius/contrib/db/fr2-mysql-daloradius-and-freeradius.sql
+
+
+[root@radius ~]# hmod 777 /var/www/html/daloradius/library/daloradius.conf.php
+
+
+[root@radius ~]# chmod 777 /var/www/html/daloradius/library/daloradius.conf.php
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# systemctl restart radiusd.service httpd
+[root@radius ~]# systemctl status radiusd.service httpd
+
+
+[root@radius ~]#
+[root@radius ~]# selinuxenabled
+[root@radius ~]# sudo setenforce 0
+[root@radius ~]# sudo apachectl restart
+[root@radius ~]# sudo apachectl restart
+[root@radius ~]#
+[root@radius ~]# systemctl enable freeradius.service
+
+[root@radius ~]# systemctl start freeradius.service
+
+
+[root@radius ~]# semodule -l | grep radius
+radius  1.13.0
+[root@radius ~]# yum search freeradius
+
+[root@radius ~]#  rpm -qa | grep freeradius
+
+
+[root@radius ~]#
+[root@radius ~]# radiusd –X
+[root@radius ~]#  systemctl status radiusd
+
+
+
+[root@radius ~]#  systemctl start radiusd
+[root@radius ~]#  systemctl enable radiusd
+[root@radius ~]#  systemctl restart radiusd
+
+[root@radius ~]# firewall-cmd --zone=public --add-port=1812/udp
+success
+[root@radius ~]# firewall-cmd --zone=public --add-port=1813/udp
+success
+[root@radius ~]# firewall-cmd --zone=public --permanent --add-port=1812/udp
+success
+[root@radius ~]# firewall-cmd --zone=public --permanent --add-port=1813/udp
+success
+[root@radius ~]# firewall-cmd --zone=public --add-service=radius
+success
+[root@radius ~]#  firewall-cmd --zone=public --permanent --add-service=radius
+success
+[root@radius ~]#  systemctl restart radiusd
+[root@radius ~]#
+[root@radius ~]#
+[root@radius ~]# cd /etc/raddb
+[root@radius raddb]#
+[root@radius raddb]#
+[root@radius raddb]# ls
+certs         dictionary  huntgroups      mods-config   panic.gdb  proxy.conf    README.rst       sites-enabled   trigger.conf
+clients.conf  hints       mods-available  mods-enabled  policy.d   radiusd.conf  sites-available  templates.conf  users
+[root@radius raddb]# vim clients.conf
+[root@radius raddb]#
+[root@radius raddb]#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vim /var/www/html/daloradius/library/daloradius.conf.php

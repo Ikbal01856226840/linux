@@ -1,0 +1,272 @@
+
+
+https://oss.oetiker.ch/smokeping/
+
+
+
+
+
+Install and Update Ubuntu
+To keep the Ubuntu installation secure, remember to run this command on Monthly basis.
+
+#sudo apt update && sudo apt upgrade -y
+
+------------------------------------------------------------------------------------------
+Install Dependency
+Since we’ll build the smokeping from the source, we’ll need to install some dependency.
+
+#sudo apt-get install --no-install-recommends gcc make libwww-perl libcgi-fast-perl libtext-soundex-perl libio-pty-perl libcrypt-ssleay-perl rrdtool librrds-perl libssl-dev libc6-dev wget autoconf fping acl curl apache2 git graphviz imagemagick libapache2-mod-fcgid mtr-tiny nmap rrdtool  -y
+
+these packages need by smokeping, so we must install them.
+------------------------------------------------------------------------------------------
+
+Download Smokeping 2.8.2
+At the time I wrote this tutorial, the latest version of smokeping is 2.8.2.
+
+#wget https://oss.oetiker.ch/smokeping/pub/smokeping-2.8.2.tar.gz
+
+-------------------------------------------------------------------------------------------
+extract and build these package
+
+#tar zxf smokeping-2.8.2.tar.gz
+#cd smokeping-2.8.2
+#LC_ALL=C ./configure --prefix=/usr/local/smokeping 
+#sudo make install
+
+-------------------------------------------------------------------------------------------
+it’ll take some time until the process is done, at the end of the process you’ll show this output
+
+-------------------------------------------------------------------------------------------
+verify if the instalation success, by check the version
+
+#/usr/local/smokeping/bin/smokeping --version
+# output
+2.008002
+
+
+At this step our instalation already completed, now it’s time to configure Smokeping.
+-------------------------------------------------------------------------------------------
+Smokeping Config
+Create folder to store data and cache
+
+
+#sudo mkdir -p /usr/local/smokeping/{cache,data,var}
+
+Create config file /usr/local/smokeping/etc/config, we’ll put all domain that we monitor here.
+
+#sudo vi /usr/local/smokeping/etc/config
+copy following code
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+*** General ***
+owner    = ITBrothers
+contact  = itbrothers24@gmail.com
+mailhost = my.mail.host
+imgcache = /usr/local/smokeping/cache
+imgurl   = cache
+datadir  = /usr/local/smokeping/data
+piddir  = /usr/local/smokeping/var
+cgiurl   = http://some.url/smokeping.cgi
+smokemail = /usr/local/smokeping/etc/smokemail.dist
+tmail = /usr/local/smokeping/etc/tmail.dist
+syslogfacility = smokeping
+
+*** Alerts ***
+to = alertee@address.somewhere
+from = smokealert@company.xy
++someloss
+type = loss
+pattern = >0%,*12*,>0%,*12*,>0%
+comment = loss 3 times  in a row
+
+*** Database ***
+step     = 300
+pings    = 20
+AVERAGE  0.5   1  1008
+AVERAGE  0.5  12  4320
+    MIN  0.5  12  4320
+    MAX  0.5  12  4320
+AVERAGE  0.5 144   720
+    MAX  0.5 144   720
+    MIN  0.5 144   720
+
+*** Presentation ***
+template = /usr/local/smokeping/etc/basepage.html.dist
+charset  = utf-8
+
++ charts
+
+menu = Charts
+title = The most interesting destinations
+
+++ stddev
+sorter = StdDev(entries=>4)
+title = Top Standard Deviation
+menu = Std Deviation
+format = Standard Deviation %f
+
+++ max
+sorter = Max(entries=>5)
+title = Top Max Roundtrip Time
+menu = by Max
+format = Max Roundtrip Time %f seconds
+
+++ loss
+sorter = Loss(entries=>5)
+title = Top Packet Loss
+menu = Loss
+format = Packets Lost %f
+
+++ median
+sorter = Median(entries=>5)
+title = Top Median Roundtrip Time
+menu = by Median
+format = Median RTT %f seconds
+
++ overview
+
+width = 600
+height = 50
+range = 10h
+
++ detail
+
+width = 600
+height = 200
+unison_tolerance = 2
+
+"Last 3 Hours"    3h
+"Last 30 Hours"   30h
+"Last 10 Days"    10d
+"Last 360 Days"   360d
+
+
+*** Probes ***
++ FPing
+binary = /usr/bin/fping
+
+*** Targets ***
+probe = FPing
+menu = Top
+title = Network Latency Grapher
+remark = Welcome to the SmokePing ITBrothers
+
++ SearchEngine
+menu = Search-Engine
+title = Search Engine
+
+++ Google-DNS
+menu = Google-DNS
+title = Google-DNS
+host = 8.8.8.8
+
+++ Google
+menu = Google
+title = google.com
+host = google.com
+
+++ Youtube
+menu = Youtube
+title = Youtube.com
+host = youtube.com
+
+
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+----------------------------------------------------------------------------------------
+
+Run smokeping in debug mode, to check if something goes wrong
+
+#sudo /usr/local/smokeping/bin/smokeping --debug
+
+smokeping run debug mode
+
+-----------------------------------------------------------------------------------------
+Smokeping Systemd Service
+
+To manage smokeping processes such as start, stop, and status. We will use systemd service which is the default in many Linux.
+
+Create new file
+
+#sudo vim /etc/systemd/system/smokeping.service
+
+------------------------------------------------------------------------------------------
+Add following config
+
+
+[Unit]
+Description=Smokeping Server
+After=network.target
+ 
+[Service]
+Type=simple
+ExecStart=/usr/local/smokeping/bin/smokeping --nodaemon /usr/local/smokeping/etc/config --logfile=/var/log/smokeping.log
+ 
+[Install]
+WantedBy=multi-user.target
+
+------------------------------------------------------------------------------------------
+After that we can manage the smokeping using systemd 'systemctl' as usual
+
+# enable smokeping on boot (only need to run this once)
+sudo systemctl enable smokeping
+# start the smokeping
+sudo systemctl start smokeping
+# check the status
+sudo systemctl status smokeping
+
+------------------------------------------------------------------------------------------
+Change the Smokeping directory permission, so it’s accessible by Apache
+
+#sudo chown www-data:www-data -R /usr/local/smokeping
+
+-----------------------------------------------------------------------------------------
+Apache Virtual Host
+
+Create new config file for Apache in '/etc/apache2/conf-available/smokeping.conf' with following content
+
+#vi /etc/apache2/conf-available/smokeping.conf
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Alias /smokeping/cache /usr/local/smokeping/cache
+Alias /smokeping /usr/local/smokeping/htdocs/
+ 
+ 
+<Directory "/usr/local/smokeping/cache">
+  AllowOverride all
+  Require all granted
+</Directory>
+ 
+<Directory "/usr/local/smokeping/htdocs/">
+ Options FollowSymLinks ExecCGI
+ AllowOverride all
+ Require all granted
+</Directory>
+*****************************************************
+--------------------------------------------------------------------------------------------
+Enable the smokeping config that just created
+
+
+#sudo a2enconf smokeping
+
+--------------------------------------------------------------------------------------------
+Enable CGI Module and Restart Apache
+
+The last step is to enable CGI module in Apache, and restart the Apache services
+
+#sudo a2enmod cgi
+#sudo systemctl restart apache2
+
+--------------------------------------------------------------------------------------------
+
+Open http://SERVER-IP/smokeping/smokeping.fcgi.dist in browser you should see the similar result with picture
