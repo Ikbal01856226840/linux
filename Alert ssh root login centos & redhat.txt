@@ -1,0 +1,52 @@
+1. Login in the server as the root user. Ensure that you have already configured the lcoal yum repository.
+yum repolist
+
+2. Install sendmail & mailx packages from local yum repository in your machine.
+yum install -y mailx sendmail 
+
+3. Start the sendmail service and also enable it.
+systemctl start sendmail
+systemctl enable sendmail
+
+4. Now go to home directory of root user & longlist the contents of it including hidden files.
+cd
+ls -al
+
+5. Here you will see a .bashrc profile file, open it in vi editor and paste the line mentioned below there.
+vim .bashrc
+
+echo ' ALERT - Root Shell Access on:'  `date` `who` | mail -s " Alert: SSH Root Access"  system@triangle.com.bd  #ikbal.hossain@triangle.com.bd
+
+echo ' ALERT - Root Shell Access 192.168.1.107 on:'  `date` `who` | mail -s " Alert: Root Access"   er.vikasnehra@yahoo.com
+
+Here replace the email address and ip address with your own email address and your machine ip address/hostname.
+Better to use yahoo mail because other gmail and other mail services sometimes cause problems.  
+
+6. Now SSH into your machine from to test whether you receive the alert email in your inbox or not.
+
+7. Open your mailbox & check in spam folder, you will see the Login Alert Emails there.
+
+
+===================================
+
+
+root@lamp:~# apt install -y mailx sendmail
+root@lamp:~# apt-get install -y mailx sendmail
+root@lamp:~# apt-get install -y sendmail
+root@lamp:~# systemctl start sendmail
+root@lamp:~# systemctl enable sendmail
+root@lamp:~# cd
+root@lamp:~# ls -al
+root@lamp:~# vim .bashrc
+
+///end of line and change Mail  ID
+echo ' ALERT - Root Shell Access on:'  `date` `who` | mail -s " Alert: SSH Root Access"  system@triangle.com.bd  #ikbal.hossain@triangle.com.bd
+
+root@lamp:~#  apt install mailutils -y
+root@lamp:~# systemctl restart sshd
+
+=================================== Sorce 
+
+https://www.youtube.com/watch?v=2rwcVk35WpY&t=358s
+
+https://webhostinggeeks.com/howto/how-to-get-email-alerts-for-ssh-login-on-linux-server/

@@ -1,0 +1,13 @@
+Database: radius
+User: radius
+Password: Somestrongpassword_321
+
+dnf -y install unzip
+MariaDB [(none)]> SHOW GLOBAL VARIABLES LIKE 'time_zone';      //Check Time Zone Radius Server
+
+[root@docker ~]# sudo dnf module list php
+[root@docker ~]# sudo dnf module reset php
+[root@docker ~]# sudo dnf module enable php:remi-7.3
+[root@docker ~]# sudo dnf module enable php:remi-7.4
+[root@docker ~]# dnf module reset php
+[root@docker ~]# sudo dnf module enable php:remi-7.4

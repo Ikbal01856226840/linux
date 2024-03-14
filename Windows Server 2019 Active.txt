@@ -1,0 +1,41 @@
+open powershell as administrator:
+
+DISM /online /Set-Edition:ServerStandard /ProductKey:N69G4-B89J2-4G8F4-WWYCC-J464C /AcceptEula
+
+after:
+
+ 1. run CMD (admin)
+                    2. 
+                    slmgr.vbs /ipk N69G4-B89J2-4G8F4-WWYCC-J464C
+                    3.
+      slmgr.vbs /skms kms.teevee.asia 
+                    4. 
+                    slmgr.vbs /ato
+
+
+all is done. thank you for watching.
+
+
+=========================================
+Command Line Codes:
+DISM /online /Get-CurrentEdition
+DISM /online /Get-TargetEditions
+DISM /Online /Set-Edition:ServerStandard /ProductKey:N69G4-B89J2-4G8F4-WWYCC-J464C /AcceptEula
+
+https://www.youtube.com/watch?v=nAO3yZrZDNw&ab_channel=TechForAll
+=================================
+
+
+How to active Windows Server 2016:
+                    1. run CMD (admin)
+                    2. slmgr.vbs /ipk 
+                    3. slmgr.vbs /skms kms.digiboy.ir
+                    4. slmgr.vbs /ato
+
+Use following Keys:
+
+ DATACENTER - CB7KF-BWN84-R7R2Y-793K2-8XDDG 
+ STANDARD - 1. WC2BQ-8NRM3-FDDYY-2BFGV-KHKQY
+            2. JCKRF-N37P4-C2D82-9YXRT-4M63B
+
+

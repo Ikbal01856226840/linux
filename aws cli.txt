@@ -1,0 +1,65 @@
+[root@ip-172-31-45-31 ~]# aws s3 cp s3://test-ikbal/777.txt /root/ikbal/    //download
+
+root@ip-172-31-35-169:~# aws s3 cp 1111.txt s3://test-ikbal	//upload
+
+[root@ip-172-31-45-31 ~]# aws s3 rm s3://test-ikbal/777.txt 	//Delete
+
+
+===================AWS
+{
+  	"Version": "2012-10-17",
+	"Statement": [
+	 {
+	    	"Effect": "Allow",
+	    	"Principal":"*",
+		"Action": "s3:GetObject",
+		"Resource": "arn:aws:s3:::test-ikbal/*"
+	   }
+	]
+}
+
+
+===================AWS
+[root@ip-172-31-33-62 ~]# aws s3 cp s3://test-ikbal/index.html /var/www/html/
+fatal error: Unable to locate credentials        // Permission Not allow 
+
+[root@ip-172-31-33-62 ~]# aws s3 cp s3://test-ikbal/index.html /var/www/html/
+download: s3://test-ikbal/index.html to ../var/www/html/index.html  
+
+[root@ip-172-31-33-62 ~]# systemctl restart httpd
+[root@ip-172-31-33-62 ~]# systemctl start httpd
+[root@ip-172-31-33-62 ~]# systemctl enable httpd
+
+================
+curl http://169.254.169.254/latest/meta-data
+
+
+
+10.200.1.41
+QA Server
+
+ 
+yum update -y
+yum install httpd -y
+service httpd start
+cd /var/www/html
+echo "<html><body><h1>Hello Cloud Gurus</h1></body></html>" > index.html
+
+================
+
+#!/bin/bash
+
+yum install httpd -y
+systemctl restart  httpd
+systemctl start httpd
+systemctl  enable httpd
+aws s3 cp s3://test-ikbal/index.html /var/www/html      /
+
+
+aws s3 cp s3://test-ikbal/index.html /var/www/html/
+
+
+
+
+
+

@@ -1,0 +1,15 @@
+!$123@2023N0c#
+
+User: raisul
+Pass: Test@321#
+
+#Remote backup up
+#40 09 * * * rsync -az /backup root@10.200.1.22:/backup2backup/backup/ispab
+
+/root/.script/ispab.sh 
+7 10 * * * /root/.script/ispab.sh
+
+ispab
+/backupdb
+
+G011acoR@321#$

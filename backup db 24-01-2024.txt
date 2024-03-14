@@ -1,0 +1,132 @@
+[root@epilot ~]# crontab -l
+1 1 * * * curl http://perp.triangle.com.bd/CronBilling/prepareMonthlyBill
+
+1 10 * * * curl http://perp.triangle.com.bd/CronBilling/processBillingNotification
+
+1 2 * * * curl http://perp.triangle.com.bd/CronBilling/expireClient
+
+1 4 * * * curl http://perp.triangle.com.bd/CronBilling/processStatusChangeRequest
+
+*/10 * * * * curl http://erp.triangle.com.bd/Aims/Attendance
+
+0 5 * * *  curl http://erp.triangle.com.bd/Lims/LeavePublicEntitlement
+
+55 23 * * * curl http://perp.triangle.com.bd/CronBilling/processRevenueData
+
+58 23 * * * curl http://perp.triangle.com.bd/CronBilling/bandwidthReport
+
+50 23 * * * curl http://perp.triangle.com.bd/CronBilling/processUsageHistory
+
+0 3 * * * curl http://perp.triangle.com.bd/RadiusClient
+
+0 0 1 * * curl http://perp.triangle.com.bd/CronBilling/processRetailNttnInvoice
+
+0 1 1 * * curl http://perp.triangle.com.bd/CronBilling/prepareCorporateMonthlyBill
+
+1 0 * * * curl http://perp.triangle.com.bd/CronBilling/getDailyDueSummary
+
+0 7 * * * curl http://perp.triangle.com.bd/CronBilling/ticketReminderCron
+
+10 0 * * * curl http://perp.triangle.com.bd/CronBilling/sendIigNotification
+
+5 0 1 * * curl http://perp.triangle.com.bd/CronBilling/lispEndUserReport
+0 9 * * * curl http://perp.triangle.com.bd/CronBilling/sendBirthdayWish
+
+58 23 * * * curl http://perp.triangle.com.bd/CronBilling/updateChurnData
+2 0 * * *  curl http://perp.triangle.com.bd/CronBilling/saveChurnData
+
+30 4 * * * curl http://perp.triangle.com.bd/RadiusClient/checkHomeRadius
+0 5 * * * curl http://perp.triangle.com.bd/RadiusClient/checkLispRadius
+
+*/1 * * * * sleep 15; curl https://perp.triangle.com.bd/TicketMapCron/getCarLocations1
+*/1 * * * * sleep 15; curl https://perp.triangle.com.bd/TicketMapCron/getCarLocations2
+
+0 6 1 * * curl https://perp.triangle.com.bd/CronBilling/saveBtrcDownstream
+30 6 1 * * curl https://perp.triangle.com.bd/CronBilling/saveBtrcPop
+
+0 5 1 * * curl https://perp.triangle.com.bd/CronBilling/prepareSfBill
+1 12 1 * * curl https://perp.triangle.com.bd/CronBilling/sfLastMonthRevenue
+
+#DB backup
+15 3 * * * /root/.script/erpdb.sh
+40 3 * * * /root/.script/pilot.sh
+30 06 * * * rsync -av /backup /etc 10.200.1.22:/backup2backup/backup/erp
+
+#Running backup process
+0 2 * * * sh /home/linkon/backup.sh
+#Transferring backup to storage
+0 3 * * * rsync -r --remove-source-files /root/backups/daily/erp-backup-*.tar.gz root@10.200.1.22:/backup2backup/backup/epilot-backup
+#Running sql backup
+30 3 * * * sh /home/linkon/sqlbackup.sh
+
+#Transferring sql backup
+0 4 * * * rsync -r --remove-source-files /root/sqlbackup/pilot-ticketing-payment-database-*.zip.tar.gz root@10.200.1.22:/backup2backup/backup/erp-sql/
+[root@epilot ~]# exit
+
+
+
+
+======================================
+[root@db1 ~]#  chmod 755 erpdb.sh
+[root@db1 ~]# cd .script/
+[root@db1 .script]# ll
+total 4
+-rwxr-xr-x 1 root root 1671 Jan 24 09:35 erpdb.sh
+[root@db1 .script]#
+[root@db1 .script]#
+[root@db1 .script]#
+[root@db1 .script]#
+[root@db1 .script]# cat erpdb.sh
+#!/bin/bash
+
+################################################################
+##
+##   MySQL Database Backup Script
+##
+################################################################
+
+export PATH=/bin:/usr/bin:/usr/local/bin
+TODAY=`date +"%d%b%Y"`
+
+################################################################
+################## Update below values  ########################
+
+DB_BACKUP_PATH='/backup/erpdb'
+MYSQL_HOST='localhost'
+MYSQL_PORT='3306'
+MYSQL_USER='root'
+MYSQL_PASSWORD='G011acor'
+DATABASE_NAME='bhw'
+BACKUP_RETAIN_DAYS=10   ## Number of days to keep local backup copy
+
+#################################################################
+
+mkdir -p ${DB_BACKUP_PATH}/${TODAY}
+echo "Backup started for database - ${DATABASE_NAME}"
+
+
+mysqldump -h ${MYSQL_HOST} \
+   -P ${MYSQL_PORT} \
+   -u ${MYSQL_USER} \
+   -p${MYSQL_PASSWORD} \
+   ${DATABASE_NAME} | gzip > ${DB_BACKUP_PATH}/${TODAY}/${DATABASE_NAME}-${TODAY}.sql.gz
+
+if [ $? -eq 0 ]; then
+  echo "Database backup successfully completed"
+else
+  echo "Error found during backup"
+fi
+
+
+##### Remove backups older than {BACKUP_RETAIN_DAYS} days  #####
+
+DBDELDATE=`date +"%d%b%Y" --date="${BACKUP_RETAIN_DAYS} days ago"`
+
+if [ ! -z ${DB_BACKUP_PATH} ]; then
+      cd ${DB_BACKUP_PATH}
+      if [ ! -z ${DBDELDATE} ] && [ -d ${DBDELDATE} ]; then
+            rm -rf ${DBDELDATE}
+      fi
+fi
+
+### End of script ####

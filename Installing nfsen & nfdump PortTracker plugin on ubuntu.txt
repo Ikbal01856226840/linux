@@ -1,0 +1,119 @@
+Installing nfsen & nfdump PortTracker plugin on ubuntu
+
+## Installing nfsen & nfdump PortTracker plugin on ubuntu
+We need to get nfdump 1.6.23 or newer. The version of nfdump included
+on Ubuntu 20.04/21.04/22.04 is nfsen-1.3.6p1 ,
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lab Tasks
+This section is prerequisite if you had already done while installing nfsen then may skip below section 1
+
+>>>> Prerequisite:
+
+https://youtu.be/4DkB0jQiTqw
+
+https://ipcorenetworks.blogspot.com/2021/08/installing-nfsen-nfdump-on-ubuntu-and.html
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Section 1:
+# cd cd /var/nfsen/
+# wget https://github.com/phaag/nfdump/archive/v1.6.23.tar.gz
+# tar xvzf nfdump-1.6.23.tar.gz
+# cd nfdump-1.6.23/
+# sh ./autogen.sh
+./configure --enable-nsel --enable-nfprofile --enable-sflow --enable-readpcap --enable-nfpcapd --enable-nftrack
+# make && make install
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+* Make a directory for the nftrack data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+$ mkdir -p /var/log/netflow/porttracker
+$ chown www-data /var/log/netflow/porttracker
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Set the nftrack data directory in the PortTracker.pm module:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$ nano /var/nfsen/nfdump-1.6.23/extra/PortTracker.pm
+Find the line:
+my $PORTSDBDIR = "/data/ports-db";
+and change it to:
+my $PORTSDBDIR = "/var/log/netflow/porttracker";
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Install the plugins into the NFSen distribution
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$ cp /var/nfsen/nfdump-1.6.23/extra/PortTracker.pm /var/nfsen/plugins/
+$ cp /usr/local/src/nfsen-1.3.6p1/contrib/PortTracker/PortTracker.php /var/www/nfsen/plugins/
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Add the plugin definition to the nfsen.conf configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$ nano /var/nfsen/nfsen-1.3.6p1/etc/nfsen.conf
+and
+nano /var/nfsen/etc/nfsen.conf
+
+Find the plugins section and make it look like this into both directries:
+_______________________________________________
+@plugins = (
+[ 'live', 'PortTracker'],
+);
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ Re-run the installation (answer questions)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cd /var/nfsen/nfsen-1.3.6p1
+$ ./install.pl ./etc/nfsen.conf
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Initialize portracker database files
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$ sudo -u www-data nftrack -I -d /var/log/netflow/porttracker
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+(This can take a LONG time! - 8 GB worth of files will be created)
+* Set the permissions so the netflow user running nfsen, and the www-data
+user running the Web interface, can access the porttracker data:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$ chown -R netflow:www-data /var/log/netflow/porttracker
+$ chmod -R 775 /var/log/netflow/porttracker
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Reload:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ /var/nfsen/bin/nfsen reload
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+* Check for success:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ grep -i 'porttracker.*success' /var/log/syslog
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+* Wait some minutes, and go the the nfsen GUI
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+http://ipaddress_of_the_server/nfsen/nfsen.php
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+... and select the Plugins tab.
+If you get an error "Cannot Read Stats file", check the /var/log/netflow/porttracker \
+directory for 2 additional files: portstat24.txt and portstat.txt like this:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+$ ls -l /var/log/netflow/porttracker/ports.stat
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Make sure that nfsen can write in that directory.
+## If you wanted to add more sources...
+Go back to where you extracted your nfsen distribution.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+$ cd /var/nfsen/bin
+$ ./nfsen reconfig
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Now start and stop nfsen:
+
+$ sudo service nfsen stop
+$ sudo service nfsen start
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

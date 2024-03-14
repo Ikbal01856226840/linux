@@ -1,0 +1,112 @@
+[root@ispab ~]# history
+    1  hostnamectl
+    2  hostnamectl set-hostname ispab.triangle.com.bd
+    3  bash
+    4  vim /etc/hosts
+    5  yum update  -y
+    6  yum install wget -y
+    7  yum install vim -y
+    8  wget https://repo.mysql.com/mysql80-community-release-el7-1.noarch.rpm
+    9  ls
+   10  vim /etc/selinux/config
+   11  vim /etc/hosts
+   12  yum install open-vm-tools -y
+   13  yum install  firewalld -y
+   14  yum enable firewalld
+   15  reboot
+   16  history
+   17  vim /etc/yum.repos.d/
+   18  cd /etc/yum.repos.d/
+   19  l
+   20  ls
+   21  cd
+   22  yum localinstall mysql80-community-release-el7-1.noarch.rpm
+   23  cd /etc/yum.repos.d/
+   24  ls
+   25  vim mysql-community.repo
+   26  yum install mysql -y
+   27  cd
+   28  yum repolist enabled | grep "mysql.*-community.*"
+   29  yum install mysql -y
+   30  systemctl start mysqld
+   31  systemctl enable mysqld
+   32  yum install mysql-community-server
+   33  systemctl start mysqld
+   34  systemctl enable mysqld
+   35  systemctl status mysqld
+   36  cat /var/log/mysqld.log | grep 'temporary password'
+   37  mysql
+   38  mysql_secure_installation
+   39  mysql -u root -p
+   40  yum install httpd -y
+   41  yum install httpd-devel -y
+   42  rpm -qa | grep -i httpd
+   43  httpd -v
+   44  systemctl start httpd
+   45  systemctl enable httpd
+   46  systemctl status httpd
+   47  irewall-cmd --permanent --add-port=80/tcp
+   48  firewall-cmd --permanent --add-port=80/tcp
+   49  firewall-cmd --permanent --add-port=443/tcp
+   50  firewall-cmd --reload
+   51  systemctl restart httpd
+   52  yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+   53  yum -y install epel-release yum-utils
+   54  yum-config-manager --disable remi-php54
+   55  yum-config-manager --enable remi-php73
+   56  yum -y install php php-cli php-fpm php-mysqlnd php-zip php-devel php-gd php-mcrypt php-mbstring php-curl php-xml php-pear php-bcmath php-json
+   57  php -v
+   58   openssl version
+   59  yum install php-mysqlnd
+   60  rpm -qi php-mysqlnd
+   61  systemctl enable php-fpm
+   62  systemctl enable mqysql
+   63  systemctl enable mysql
+   64  systemctl enable mysqld
+   65  systemctl enable httpd
+   66  yum -y install net-snmp net-snmp-utils
+   67  mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.orig
+   68  vim /etc/snmp/snmpd.conf
+   69  systemctl restart snmpd
+   70  systemctl ebanle snmpd
+   71  systemctl ebanble snmpd
+   72  systemctl enable snmpd
+   73  systemctl start snmpd
+   74  systemctl staus snmpd
+   75  systemctl status snmpd
+   76  firewall-cmd --permanent --add-port=161/udp
+   77  firewall-cmd --reload
+   78  cat /var/log/mysqld.log
+   79  firewall-cmd --permanent --add-port=3306/udp
+   80  firewall-cmd --permanent --add-port=tcp/udp
+   81  firewall-cmd --permanent --add-port=3306/tcp
+   82  firewall-cmd --reload
+   83  firewall-cmd --permanent --add-port=9723/tcp
+   84  firewall-cmd --reload
+   85  useradd kamrul
+   86  passwd kamrul
+   87  useradd ikbal
+   88  passwd ikbal
+   89  vim /etc/ssh/sshd_config
+   90  visudo
+   91  systemctl restart sshd
+   92  cd /etc/ssh/
+   93  ls  -la
+   94  cd
+   95  ls -la
+   96  vim /etc/motd
+   97  systemctl restart sshd
+   98  firewall-cmd --zone=public --add-service=mysql --permanent
+   99  firewall-cmd --reload
+  100  yum install -y mailx sendmail
+  101  systemctl start sendmail
+  102  systemctl enable sendmail
+  103  cd
+  104  ls -al
+  105  vim .bashrc
+  106  systemctl restart sshd
+  107  history
+[root@ispab ~]#
+
+[root@ispab ~]# firewall-cmd --zone=public --remove-service=ssh --permanent
+

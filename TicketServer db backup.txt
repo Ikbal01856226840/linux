@@ -1,0 +1,144 @@
+#!/bin/bash
+
+################################################################
+##
+##   MySQL Database Backup Script
+##
+################################################################
+
+export PATH=/bin:/usr/bin:/usr/local/bin
+TODAY=`date +"%d%b%Y"`
+
+################################################################
+################## Update below values  ########################
+
+DB_BACKUP_PATH='/backup/ispab'
+MYSQL_HOST='localhost'
+MYSQL_PORT='3306'
+MYSQL_USER='root'
+MYSQL_PASSWORD='B@aG!@de$h#321'
+DATABASE_NAME='ispab'
+BACKUP_RETAIN_DAYS=10   ## Number of days to keep local backup copy
+
+#################################################################
+
+mkdir -p ${DB_BACKUP_PATH}/${TODAY}
+echo "Backup started for database - ${DATABASE_NAME}"
+
+
+mysqldump -h ${MYSQL_HOST} \
+   -P ${MYSQL_PORT} \
+   -u ${MYSQL_USER} \
+   -p${MYSQL_PASSWORD} \
+   ${DATABASE_NAME} | gzip > ${DB_BACKUP_PATH}/${TODAY}/${DATABASE_NAME}-${TODAY}.sql.gz
+
+if [ $? -eq 0 ]; then
+  echo "Database backup successfully completed"
+else
+  echo "Error found during backup"
+fi
+
+
+##### Remove backups older than {BACKUP_RETAIN_DAYS} days  #####
+
+DBDELDATE=`date +"%d%b%Y" --date="${BACKUP_RETAIN_DAYS} days ago"`
+
+if [ ! -z ${DB_BACKUP_PATH} ]; then
+      cd ${DB_BACKUP_PATH}
+      if [ ! -z ${DBDELDATE} ] && [ -d ${DBDELDATE} ]; then
+            rm -rf ${DBDELDATE}
+      fi
+fi
+
+### End of script ####
+
+
+
+
+
+
+
+
+
+===============================================OTRS
+
+[root@ticket ~]# crontab -l
+#for daily 4 AM mysql backup.
+0 4 * * *  /root/backup.sh &>/dev/null
+
+#Remote Backup
+30 13 * * * rsync -az /backup root@10.200.1.22:/backup2backup/backup/otrs/
+[root@ticket ~]#
+[root@ticket ~]#
+[root@ticket ~]#
+[root@ticket ~]# cat /root/
+cat: /root/: Is a directory
+[root@ticket ~]#
+[root@ticket ~]# cat /root/backup.sh
+#!/bin/bash
+
+################################################################
+##
+##   MySQL Database Backup Script
+##
+################################################################
+
+export PATH=/bin:/usr/bin:/usr/local/bin
+TODAY=`date +"%d%b%Y"`
+
+################################################################
+################## Update below values  ########################
+
+DB_BACKUP_PATH='/backup'
+MYSQL_HOST='localhost'
+MYSQL_PORT='3306'
+MYSQL_USER='root'
+MYSQL_PASSWORD='TSL@dmin'
+DATABASE_NAME='otrs'
+BACKUP_RETAIN_DAYS=10   ## Number of days to keep local backup copy
+
+#################################################################
+
+mkdir -p ${DB_BACKUP_PATH}/${TODAY}
+echo "Backup started for database - ${DATABASE_NAME}"
+
+
+mysqldump -h ${MYSQL_HOST} \
+   -P ${MYSQL_PORT} \
+   -u ${MYSQL_USER} \
+   -p${MYSQL_PASSWORD} \
+   ${DATABASE_NAME} | gzip > ${DB_BACKUP_PATH}/${TODAY}/${DATABASE_NAME}-${TODAY}.sql.gz
+
+if [ $? -eq 0 ]; then
+  echo "Database backup successfully completed"
+else
+  echo "Error found during backup"
+fi
+
+
+##### Remove backups older than {BACKUP_RETAIN_DAYS} days  #####
+
+DBDELDATE=`date +"%d%b%Y" --date="${BACKUP_RETAIN_DAYS} days ago"`
+
+if [ ! -z ${DB_BACKUP_PATH} ]; then
+      cd ${DB_BACKUP_PATH}
+      if [ ! -z ${DBDELDATE} ] && [ -d ${DBDELDATE} ]; then
+            rm -rf ${DBDELDATE}
+      fi
+fi
+
+### End of script ####
+
+
+
+
+from 113.21.229.225 into ticket.triangle.com.bd
+
+
+
+
+
+
+
+
+

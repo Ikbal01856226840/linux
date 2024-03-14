@@ -1,0 +1,88 @@
+[root@db1 ~]# mkdir backup
+
+[root@db1 ~]# mkdir .script
+[root@db1 ~]# cd .script/
+[root@db1 .script]#chmod 755 erpdb.sh
+[root@db1 .script]# vim erpdb.sh
+
+#!/bin/bash
+
+################################################################
+##
+##   MySQL Database Backup Script
+##
+################################################################
+
+export PATH=/bin:/usr/bin:/usr/local/bin
+TODAY=`date +"%d%b%Y"`
+
+################################################################
+################## Update below values  ########################
+
+DB_BACKUP_PATH='/backup/erpdb'
+MYSQL_HOST='localhost'
+MYSQL_PORT='3306'
+MYSQL_USER='root'          		//root database User
+MYSQL_PASSWORD='G011acor'      		//root database password
+DATABASE_NAME='bhw'		//Backup Database Name
+BACKUP_RETAIN_DAYS=10   ## Number of days to keep local backup copy
+
+#################################################################
+
+mkdir -p ${DB_BACKUP_PATH}/${TODAY}
+echo "Backup started for database - ${DATABASE_NAME}"
+
+
+mysqldump -h ${MYSQL_HOST} \
+   -P ${MYSQL_PORT} \
+   -u ${MYSQL_USER} \
+   -p${MYSQL_PASSWORD} \
+   ${DATABASE_NAME} | gzip > ${DB_BACKUP_PATH}/${TODAY}/${DATABASE_NAME}-${TODAY}.sql.gz
+
+if [ $? -eq 0 ]; then
+  echo "Database backup successfully completed"
+else
+  echo "Error found during backup"
+fi
+
+
+##### Remove backups older than {BACKUP_RETAIN_DAYS} days  #####
+
+DBDELDATE=`date +"%d%b%Y" --date="${BACKUP_RETAIN_DAYS} days ago"`
+
+if [ ! -z ${DB_BACKUP_PATH} ]; then
+      cd ${DB_BACKUP_PATH}
+      if [ ! -z ${DBDELDATE} ] && [ -d ${DBDELDATE} ]; then
+            rm -rf ${DBDELDATE}
+      fi
+fi
+
+### End of script ####
+
+
+================================  Crontab Command ==============================
+
+[root@db1 .script]# crontab -e
+
+17 10 * * * /root/.script/erpdb.sh				17->Minite 10-> Houre
+
+#Transferring backup to storage
+
+30 10 * * * rsync -av /backup /etc 10.200.6.18:/backupdb
+
+
+=================================================  SSh Copy Command =========================
+
+scp bhw-22Jan2024.sql.gz root@10.200.6.19:/home/ikbal
+
+=================================================  Unzip Command =========================
+
+[root@node1 22Jan2024]# gzip -dk bhw-22Jan2024.sql.gz     
+
+=================================================  Restore command =========================
+
+[root@db-server ~]# mysql -uroot -p laravel < /root/dbbackup/20240114_212737.sql
+
+=========================== Restore command Databases Entry Databases and User Create =========================
+
+mysql> source /var/www/html/php-devops/dbdump/bhw.sql

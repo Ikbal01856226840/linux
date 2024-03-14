@@ -1,0 +1,43 @@
+[root@nod1 html]# yum install  git -y
+[root@nod1 html]# git clone https://github.com/Iqbalkhan319/php-devops.git
+
+[root@nod1 includes]# mysql -u root -p
+
+mysql> create database bhw;
+
+mysql> create user 'bhw'@'localhost' identified by 'Ltest@12345';
+
+mysql> grant all privileges on bhw.* To 'bhw'@'localhost';
+
+mysql> use bhw;
+
+mysql> show tables;
+
+mysql> use bhw;
+Database changed
+mysql> source /var/www/html/php-devops/dbdump/bhw.sql                             //Databases Restore Command
+
+mysql> show tables;
+mysql> select  * from admin;
+mysql> select  * from tblusers;
+
+mysql> flush privileges;
+
+mysql> exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10.200.6.18 node1.example.com
+10.200.6.18 node1.triangle.com

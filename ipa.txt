@@ -1,0 +1,82 @@
+ipa user-add test --first=Test --last=User--email=test@example.com --password
+ikbal0171
+01856226840+
+/opt/prometheus-2.26.0.linux-amd64/node_exporter
+ipa-client-install --hostname=docker.tsl.local --mkhomedir --server=ipa.tsl.local --domain tsl.local --realm TSL.LOCAL
+
+ipa-client-install --server=ipa.tsl.local --domain tsl.local
+
+[root@ipa ~]# firewall-cmd --permanent --add-service={ntp,http,https,ldap,ldaps,kerberos,kpasswd,dns}
+[root@ipa ~]# firewall-cmd --reload
+
+
+T$L@321#
+
+Steps:
+--------
+# hostnamectl set-hostname "freeipa.example.com"
+
+# yum update -y ; reboot
+
+# vim /etc/hosts
+192.168.1.111 freeipa.example.com ip
+
+# yum module list idm
+
+# yum -y install @idm:DL1
+
+# yum -y install freeipa-server
+
+# ipa-server-install
+no, yes
+
+# ipactl status
+
+# firewall-cmd --permanent --add-service={ntp,http,https,ldap,ldaps,kerberos,kpasswd,dns}
+
+# firewall-cmd --reload
+
+# firewall-cmd –permanent --add-service freeipa-ldap
+
+# firewall-cmd –permanent --add-service freeipa-ldaps
+
+# firewall-cmd --reload
+
+Obtain a kerberos ticket using the command: 'kinit admin'
+# kinit admin
+
+# klist
+
+Allow User’s home directory creation automatically 
+# authconfig --enablemkhomedir --update
+
+FreeIPA admin portal will be available at:
+https://freeipa.example.com/ipa/ui
+OR
+https://192.168.1.111
+
+Adding Client to FreeIPA Server
+----------
+Login on client machine and follow these steps:
+# yum install freeipa-client -y
+
+# ipa-client-install --mkhomedir --force-ntpd
+yes
+---
+Uninstall FreeIPA Server
+# ipa-server-install --uninstall
+
+========================= Ubuntu =============================
+
+apt-get install freeipa-client
+root@RnD:~# apt install freeipa-client -y
+root@RnD:~# apt install ntp
+
+ipa-client-install --hostname=rnd.triangle.com.bd --mkhomedir --server=ipa.tsl.local --domain tsl.local --realm TSL.LOCAL
+
+timedatectl set-timezone Region/Location
+
+===========================================================
+
+
+firewall-cmd --add-service={http,https,dns,ntp,freeipaldap,freeipa-ldaps} --permanent

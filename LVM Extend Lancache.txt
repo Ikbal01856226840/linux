@@ -1,0 +1,7 @@
+
+         pvcreate /dev/sdc
+  415  vgextend lancache /dev/sdc
+  419  lvextend -l +100%FREE /dev/lancache/disk
+  426  vgdisplay 
+  427  lvdisplay
+  430  resize2fs /dev/lancache/disk
